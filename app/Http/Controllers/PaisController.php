@@ -66,7 +66,11 @@ class PaisController extends Controller
      */
     public function edit($id)
     {
-        //
+        $pais = Pais::find($id);
+        $municipios = DB::table('tb_municipio')
+        ->orderBy('muni_nomb')
+        ->get();
+        return view('pais.edit' , ['pais'  => $pais, 'municipios' => $municipios]);
     }
 
     /**
@@ -78,7 +82,17 @@ class PaisController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $pais = Pais::find($id);
+
+        $pais->pais_nomb = $request->name;
+        $pais->muni_codi = $request->code;
+        $pais->save();
+
+        $paises = DB::table('tb_pais')
+        ->join('tb_municipio' , 'tb_pais.muni_codi' , '=' , 'tb_municipio.muni_codi')
+        ->select('tb_pais.*' , "tb_municipio.muni_nomb")
+        ->get();
+        return view('pais.index', ['paises' => $paises]);
     }
 
     /**
